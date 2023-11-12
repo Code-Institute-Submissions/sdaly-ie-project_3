@@ -1,4 +1,6 @@
-# Write your code to expect a terminal of 80 characters wide and 24 rows high
+# REMINDER: Expect output terminal of 80 characters wide and 24 rows high
+# Lines 4 - 24 Modified Source code from 'Code Institute', Lesson: 'LoveSandwiches Walkthrough Project - Getting Setup'
+# The following code imports the necessary modules for interacting with the Google Sheets API.
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -24,72 +26,68 @@ SHEET = GSPREAD_CLIENT.open('new_property_price')
 # Selects first worksheet
 worksheet = SHEET.get_worksheet(0)
 
-# Displays welcome message and offers app choices within expected terminal 80x24 limitation
-print("Welcome to 'Property Value', your friendly database application")
-print("used for keeping track of property value trends nationally.\n")
-print("Please 'press 1' and hit enter to 'add new information'")
-print("to the database\n")
-print("or\n")
-print("Please 'press 2' and hit enter to 'perform analysis'")
-print("on the existing dataset\n")
-print("Press '3' and hit enter to 'exit'.\n")
+# Function prompts the user to input valid data in integer form
+def get_integer_input(prompt, range_min=None, range_max=None):
+    while True:
+        try:
+            value = int(input(prompt))
+             # Checks if entered integer is within the provided range
+            if (range_min is not None and value < range_min) or (range_max is not None and value > range_max):
+                print(f"Please enter a numeric value between {range_min} and {range_max}.")
+            else:
+                return value
 
-# Create users choices
+        except ValueError:
+            print("Invalid input. Please enter a valid integer (i.e. whole number).")
+
+# Creates user choices
 while True:
-    # Start a loop that will continue until the user chooses to exit
+    # Displays welcome message and menu within expected terminal 80x24 limitation
+    print("\nWelcome to 'Property Value', your friendly database application")
+    print("used for keeping track of property value trends nationally.\n")
+    print("Please 'press 1' and hit enter to 'add new information'")
+    print("to the database\n")
+    print("Please 'press 2' and hit enter to 'perform analysis'")
+    print("on the existing dataset\n")
+    print("Press '3' and hit enter to 'exit'.\n")
+
+    # Starts a loop that will continue until the user chooses to exit
     choice = input("Enter your choice here: ")
 
-    # Process the user's choice
+    # Option 1: Add new information to the database
     if choice == '1':
-        # Option 1: Add new information to the database
-        try:
-            # Prompts user for required information sequentially 
-            year = input("Enter the Year (yyyy): ")
-            quarter = input("Enter the Quarter (1-4): ")
-            nationally = input("Enter the value for Nationally: ")
-            dublin = input("Enter the value for Dublin: ")
-            cork = input("Enter the value for Cork: ")
-            galway = input("Enter the value for Galway: ")
-            limerick = input("Enter the value for Limerick: ")
-            waterford = input("Enter the value for Waterford: ")
-            other_counties = input("Enter the value for Other Counties: ")
+        year = get_integer_input("Enter the Year (yyyy): ", 1900, 2100)
+        quarter = get_integer_input("Enter the Quarter (1-4): ", 1, 4)
+        nationally = get_integer_input("Enter the value for Nationally: €")
+        dublin = get_integer_input("Enter the value for Dublin: €")
+        cork = get_integer_input("Enter the value for Cork: €")
+        galway = get_integer_input("Enter the value for Galway: €")
+        limerick = get_integer_input("Enter the value for Limerick: €")
+        waterford = get_integer_input("Enter the value for Waterford: €")
+        other_counties = get_integer_input("Enter the value for Other Counties: €")
 
-            # Ensure the year is valid
-            if not year.isdigit() or len(year) != 4:
-                print("Invalid year format. Please try again.")
-                continue
-                  
-            # Ensure the quarter is valid
-            if not quarter.isdigit() or not 1 <= int(quarter) <= 4:
-                print("Invalid quarter. Please try again.")
-                continue
+        # Create a summary of the entered data
+        row = [year, quarter, nationally, dublin, cork, galway, limerick, waterford, other_counties]
+        print("\nSummary of the data you've entered:")
+        print(f"Year: {year}")
+        print(f"Quarter: {quarter}")
+        print(f"Nationally: €{nationally}")
+        print(f"Dublin: €{dublin}")
+        print(f"Cork: €{cork}")
+        print(f"Galway: €{galway}")
+        print(f"Limerick: €{limerick}")
+        print(f"Waterford: €{waterford}")
+        print(f"Other Counties: €{other_counties}\n")
 
-            # Create a summary of the entered data
-            row = [year, quarter, nationally, dublin, cork, galway, limerick, waterford, other_counties]
-            print("\nSummary of the data entered:")
-            print(f"Year: {year}")
-            print(f"Quarter: {quarter}")
-            print(f"Nationally: {nationally}")
-            print(f"Dublin: {dublin}")
-            print(f"Cork: {cork}")
-            print(f"Galway: {galway}")
-            print(f"Limerick: {limerick}")
-            print(f"Waterford: {waterford}")
-            print(f"Other Counties: {other_counties}\n")
-
-            # Ask for confirmation before saving the data
-            confirm = input("Is the entered data correct? (yes/no): ")
-            if confirm.lower().startswith('y'):
-                # Insert the data into the worksheet
-                worksheet.append_row(row)
-                print("New information added successfully.")
-            else:
-                print("Data entry cancelled. No data was added.")
-                continue
-
-        except Exception as e:
-            print("An error occurred when trying to add information to the database.")
-            print(e)
+        # Ask for confirmation before saving the data
+        confirm = input("Is the entered data correct? (yes/no): ")
+        if confirm.lower().startswith('y'):
+            # Insert the data into the worksheet
+            worksheet.append_row(row)
+            print("\nNew information has been successfully added to the database.")
+        else:
+            print("\nData entry cancelled. No data was added.")
+            continue
 
     elif choice == '2':
         # Option 2: Perform analysis on the existing dataset
