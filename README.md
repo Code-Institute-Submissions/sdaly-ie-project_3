@@ -40,7 +40,7 @@ Happy coding!
 1. Project phase: Wiring up of APIs and confirmation of access to google sheet
 <br>
 <br>
-API error code 403 - Permission denied for access to Google Sheets API. 
+Error: API error code 403 - Permission denied for access to Google Sheets API. 
 <br>
 <br>
 ![Screenshot of API error code 403](assets/images/error1.jpg) 
@@ -50,6 +50,23 @@ Resolution is provided in the error message to access weblink given and click 'E
 <br>
 <br>
 ![Screenshot of API error resolved](assets/images/resolved1.jpg) 
+<br>
+<br>
+
+2. Project Phase: User choice message, loop and if statement outline
+<br>
+<br>
+(i) Error: IndentationError - Issue with the whitespace in code. Indentation is used to define blocks of code that belong together. In this instance all of the 'if' and 'while' statement code needed to be indented the same amount to indicate that it is within that block, which resolved the issue.
+<br>
+<br>
+(ii) Terminal 80 x 24 line limitation:
+<br>
+<br>
+![Screenshot of terminal 80 x 24 line limitation violation](assets/images/terminal_issue.jpg)
+<br>
+<br>
+Correction of print() code to adjust for expected Terminal 80 x 24 line limitation:
+![Screenshot of terminal 80 x 24 line limitation violation resolved](assets/images/terminal_fix.jpg)
 <br>
 <br>
 
