@@ -30,3 +30,51 @@ The deployment terminal is set to 80 columns by 24 rows. That means that each li
 ---
 
 Happy coding!
+
+
+>#### __High level summary of issues encountered during App development:__
+
+* __Errors and resolutions:__ <br>
+
+
+1. Project phase: Wiring up of APIs and confirmation of access to google sheet
+<br>
+<br>
+API error code 403 - Permission denied for access to Google Sheets API. 
+<br>
+<br>
+![Screenshot of API error code 403](assets/images/error1.jpg) 
+<br>
+<br>
+Resolution is provided in the error message to access weblink given and click 'Enable'. Once enabled, test was successful.
+<br>
+<br>
+![Screenshot of API error resolved](assets/images/resolved1.jpg) 
+<br>
+<br>
+
+* __Maintenance:__ <br> 
+
+* __Limitations:__ <br>
+
+* __Unfixed bugs:__ <br>
+
+  
+<br>
+
+## __User Stories:__
+
+__User Story:__ <br>
+ 
+__User Story Testing:__ <br> 
+
+
+##  __Features:__
+
+
+## __Deployment:__
+
+
+## __Credits:__
+
+
