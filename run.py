@@ -91,9 +91,76 @@ while True:
 
     elif choice == '2':
         # Option 2: Perform analysis on the existing dataset
-        print("TBC")
-        # Placeholder for code to follow
-        pass
+
+        # Prompt user for year range
+        start_year = get_integer_input("Enter the start Year (yyyy) for analysis: ", 1900, 2100)
+        end_year = get_integer_input("Enter the end Year (yyyy) for analysis: ", start_year, 2100)
+        
+        # Prompt user for quarter range
+        start_quarter = get_integer_input("Enter the start Quarter (1-4) for analysis: ", 1, 4)
+        end_quarter = get_integer_input("Enter the end Quarter (1-4) for analysis: ", start_quarter, 4)
+
+        # Prompt user for county
+        print("Select the county for analysis:")
+        print("1: Nationally")
+        print("2: Dublin")
+        print("3: Cork")
+        print("4: Galway")
+        print("5: Limerick")
+        print("6: Waterford")
+        print("7: Other_counties")
+        county_choice = get_integer_input("Enter the number for selected county: ", 1, 7)
+        
+        # County choice is mapped to column header name in Google Sheets
+        county_column_mapping = {
+            1: 'Nationally',
+            2: 'Dublin',
+            3: 'Cork',
+            4: 'Galway',
+            5: 'Limerick',
+            6: 'Waterford',
+            7: 'Other_counties',
+        }
+        
+        # Convert choice to a column header name
+        selected_county = county_column_mapping[county_choice]
+        
+        # Retrieve the data from Google Sheet
+        try:
+            records = worksheet.get_all_records()
+            data = []
+            
+            for record in records:    
+                # Aligning fields with Google Sheet's column headers
+                record_year = record.get('Year')
+                record_quarter = record.get('Quarter')
+                
+                # Checking year and quarter are within specified range
+                if start_year <= record_year <= end_year and start_quarter <= record_quarter <= end_quarter:
+                    value = record.get(selected_county)
+                    
+                    if isinstance(value, str):
+                        value = value.replace('€', '').replace(',', '')
+                    
+                    if value:
+                        data.append(float(value))
+                        
+            if not data:
+                print("No data found for the given range of years and quarters.")
+            
+            else:
+                # Calculate descriptive statistics
+                import statistics
+                average = statistics.mean(data)
+                median = statistics.median(data)
+                
+                # Display the results
+                print(f"\nDescriptive Statistics from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}:")
+                print(f"Average: €{average:,.2f}")
+                print(f"Median: €{median:,.2f}")
+        
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     elif choice == '3':
         # Option 3: Exit the program
