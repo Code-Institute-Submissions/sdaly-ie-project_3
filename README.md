@@ -59,6 +59,14 @@ Correction of print() code to adjust for expected Terminal 80 x 24 line limitati
 15. __Logical Flow:__ It was important to ensure that the logic of the program flows operated as originally intended. For instance, having the user validate their inputs by confirming the summarised data was correct before saving.
 <br>
 <br>
+16. __Google Sheet Indexing error:__ 
+
+![Screenshot of Google Sheet indexing error](assets/images/index_error.jpg)
+<br>
+<br>
+17. __Make more frequent Github Commits:__ To ensure work is not lost. 
+<br>
+<br>
 
 * ### __Maintenance:__ <br> 
 <br>

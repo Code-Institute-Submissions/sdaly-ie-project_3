@@ -1,5 +1,5 @@
 # REMINDER: Expect output terminal of 80 characters wide and 24 rows high
-# Lines 4 - 24 Modified Source code from 'Code Institute', Lesson: 'LoveSandwiches Walkthrough Project - Getting Setup'
+# Lines 7 - 24 Source code from 'Code Institute', Lesson: 'LoveSandwiches Walkthrough Project - Getting Setup'
 # The following code imports the necessary modules for interacting with the Google Sheets API.
 import gspread
 from google.oauth2.service_account import Credentials
@@ -152,12 +152,20 @@ while True:
                 # Calculate descriptive statistics
                 import statistics
                 average = statistics.mean(data)
+                std_dev = statistics.stdev(data)
+                min_value = min(data)
                 median = statistics.median(data)
-                
+                max_value = max(data)
+                data_range = max_value - min_value
+
                 # Display the results
                 print(f"\nDescriptive Statistics from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}:")
-                print(f"Average: €{average:,.2f}")
+                print(f"Average (mean): €{average:,.2f}")
+                print(f"Standard Deviation (+/-): €{std_dev:,.2f}")
+                print(f"\nMinimum Value: €{min_value:,.2f}")
                 print(f"Median: €{median:,.2f}")
+                print(f"Maximum Value: €{max_value:,.2f}")
+                print(f"Range: €{data_range:,.2f}")
         
         except Exception as e:
             print(f"An error occurred: {e}")
