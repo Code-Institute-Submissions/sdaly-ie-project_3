@@ -44,7 +44,7 @@ def get_integer_input(prompt, range_min=None, range_max=None):
 # Creates user choices
 while True:
     
-    # User options dictionary with key-value pair representing choices user can select
+    # User options dictionary with key-value pair representing choices that can be selected
     options = {
         '1': "Add new information to database",
         '2': "Perform analysis on existing database",
@@ -52,14 +52,14 @@ while True:
     }
 
     # Menu header within terminal 80x24 limitation
-    print("\n +--------------------------------------------------+")
+    print(" +--------------------------------------------------+")
     print("\n     Welcome to 'P r o p e r t y  T r a c k e r'\n")
     print("  Keeping you up-to-date with Irish property trends")
     
     # Menu table created using f-strings within terminal 80x24 limitation
     menu_table = f"""
  +--------------------------------------------------+
- | Press | Action                                   |
+ | Press |                 Action                   |
  +--------------------------------------------------+
  |   {'1':<3} | {options['1']:<40} |
  |   {'2':<3} | {options['2']:<40} |
@@ -98,9 +98,10 @@ while True:
         # Ask for confirmation before saving the data
         confirm = input("\n Is the entered data correct? (yes/no): ")
         if confirm.lower().startswith('y'):
-            # Insert the data into the worksheet
+            
+            # Adds the data to the worksheet
             worksheet.append_row(row)
-            print("\n New information has been successfully added to the database.")
+            print("\n New information has been successfully added to the database.\n")
         else:
             print("\n Data entry cancelled. No data was added.")
             continue
@@ -109,14 +110,14 @@ while True:
         # Option 2: Perform analysis on the existing dataset
 
         # Prompt user for year range
-        start_year = get_integer_input("\n Enter the start Year (yyyy) for analysis: ", 1900, 2100)
+        start_year = get_integer_input("\n Enter the start Year (yyyy) for analysis: ", 1975, 2100)
         end_year = get_integer_input(" Enter the end Year (yyyy) for analysis: ", start_year, 2100)
         
         # Prompt user for quarter range
         start_quarter = get_integer_input(" Enter the start Quarter (1-4) for analysis: ", 1, 4)
-        end_quarter = get_integer_input(" Enter the end Quarter (1-4) for analysis: ", start_quarter, 4)
+        end_quarter = get_integer_input(" Enter the end Quarter (1-4) for analysis: ", 1, 4)
 
-        # Prompt user for county
+        # Prompt user for county selection
         print(" Select the county for analysis:")
         print(" 1: Nationally")
         print(" 2: Dublin")
@@ -149,6 +150,7 @@ while True:
             end_price = None
             
             for record in records:    
+                
                 # Aligning fields with Google Sheet's column headers
                 record_year = record.get("Year")
                 record_quarter = record.get("Quarter")
@@ -163,61 +165,68 @@ while True:
                     if value:
                         float_value = float(value)
                         data.append(float_value)
+
                         if record_year == start_year and record_quarter == start_quarter:
                             start_price = float_value
+                        
                         if record_year == end_year and record_quarter == end_quarter:
                             end_price = float_value
                         
             if not data:
-                print("\n No data found for the given range of years and quarters.")   
+                print("\n +--------------------------------------------------+")
+                print("| No data found for the given range of years and quarters. |")
+                print(" +--------------------------------------------------+")   
             
-            elif start_price is not None and end_price is not None:
+            else:
                 
-                # Calculate and display percentage change 
-                percentage_change = ((end_price - start_price) / start_price) * 100
-
-                if abs(percentage_change) < 0.1:  # Threshold for no significant change which typically is considered negligible in most economical contexts
-                    print(f"\n Prices have remained relatively stable with no significant change from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
-                
-                elif percentage_change > 0:
-                    print(f"\n Prices have increased by {percentage_change:.2f}% from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
+                # Calculates percentage summary 
+                if start_price is not None and end_price is not None:
+                    percentage_change = ((end_price - start_price) / start_price) * 100
+                    change_description = "increased" if percentage_change > 0 else "decreased"
+                    summary_message = f"Prices have {change_description} by {abs(percentage_change):.2f}%"
                 
                 else:
-                    print(f"\n Prices have decreased by {abs(percentage_change):.2f}% from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
+                    summary_message = "Unable to calculate overall price changes - data may be incomplete."
 
-            else:
-                print("\n Unable to calculate overall price changes - data might be incomplete for the selected range.")
+                # Displays percentage summary
+                print("\n +--------------------------------------------------+")
+                print(" |              Summary of Price Changes            |")
+                print(" +--------------------------------------------------+")
+                print(f"                From {start_year} Q{start_quarter} to {end_year} Q{end_quarter}")
+                print(f"            {summary_message}")
+                print("                  For a New Properity")
+                print(" +--------------------------------------------------+")
 
-            # Calculate descriptive statistic summary
-            import statistics
-            import numpy as np
+                # Calculates Summary Statistics
+                if data:
+                    import statistics
+                    import numpy as np
 
-            if data:
-                average = statistics.mean(data)
-                std_dev = statistics.stdev(data)
-                min_value = min(data)
-                median = statistics.median(data)
-                max_value = max(data)
-                data_range = max_value - min_value
+                    average = statistics.mean(data)
+                    std_dev = statistics.stdev(data)
+                    min_value = min(data)
+                    median = statistics.median(data)
+                    max_value = max(data)
+                    data_range = max_value - min_value
 
-                Q1 = np.percentile(data, 25)
-                Q3 = np.percentile(data, 75)
-                IQR = Q3 - Q1
+                    Q1 = np.percentile(data, 25)
+                    Q3 = np.percentile(data, 75)
+                    IQR = Q3 - Q1
 
-                # Display results
-                print(f"\n Descriptive Statistics from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}:")
-                
-                print(f"\n Minimum Value: €{min_value:,.2f}")
-                print(f" Maximum Value: €{max_value:,.2f}")
-                print(f" Range: €{data_range:,.2f}")
-                
-                print(f"\n Lower Quartile (Q1): €{Q1:,.2f}")
-                print(f" Median (Q2): €{median:,.2f}")
-                print(f" Upper Quartile (Q3): €{Q3:,.2f}")
-                print(f" Interquartile Range (IQR): €{IQR:,.2f}")
-
-                print(f"\n Average (mean): €{average:,.2f}")
-                print(f" Standard Deviation (+/-): €{std_dev:,.2f}")
+                    # Displays sSummary Statistics
+                    print(" |              Descriptive Statistics:             |")
+                    print(" +--------------------------------------------------+")
+                    print(f"        Minimum Value:            €{min_value:8,.2f}")
+                    print(f"        Maximum Value:            €{max_value:8,.2f}")
+                    print(f"        Range:                    €{data_range:8,.2f}")
+                    print(" +--------------------------------------------------+")
+                    print(f"        Lower Quartile (Q1):      €{Q1:8,.2f}")
+                    print(f"        Median (Q2):              €{median:8,.2f}")
+                    print(f"        Upper Quartile (Q3):      €{Q3:8,.2f}")
+                    print(f"        IQR:                      €{IQR:8,.2f}")
+                    print(" +--------------------------------------------------+")
+                    print(f"        Average (mean):           €{average:8,.2f}")
+                    print(f"        Standard Deviation (+/-): €{std_dev:8,.2f}")                    
 
         except Exception as e:
             print(f" An error occurred: {e}")
