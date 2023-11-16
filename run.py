@@ -145,6 +145,8 @@ while True:
         try:
             records = worksheet.get_all_records()
             data = []
+            start_price = None
+            end_price = None
             
             for record in records:    
                 # Aligning fields with Google Sheet's column headers
@@ -159,14 +161,38 @@ while True:
                         value = value.replace("€", "").replace(",", "")
                     
                     if value:
-                        data.append(float(value))
+                        float_value = float(value)
+                        data.append(float_value)
+                        if record_year == start_year and record_quarter == start_quarter:
+                            start_price = float_value
+                        if record_year == end_year and record_quarter == end_quarter:
+                            end_price = float_value
                         
             if not data:
-                print("\n No data found for the given range of years and quarters.")
+                print("\n No data found for the given range of years and quarters.")   
             
+            elif start_price is not None and end_price is not None:
+                
+                # Calculate and display percentage change 
+                percentage_change = ((end_price - start_price) / start_price) * 100
+
+                if abs(percentage_change) < 0.1:  # Threshold for no significant change which typically is considered negligible in most economical contexts
+                    print(f"\n Prices have remained relatively stable with no significant change from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
+                
+                elif percentage_change > 0:
+                    print(f"\n Prices have increased by {percentage_change:.2f}% from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
+                
+                else:
+                    print(f"\n Prices have decreased by {abs(percentage_change):.2f}% from {start_year} Q{start_quarter} to {end_year} Q{end_quarter}.")
+
             else:
-                # Calculate descriptive statistics
-                import statistics
+                print("\n Unable to calculate overall price changes - data might be incomplete for the selected range.")
+
+            # Calculate descriptive statistic summary
+            import statistics
+            import numpy as np
+
+            if data:
                 average = statistics.mean(data)
                 std_dev = statistics.stdev(data)
                 min_value = min(data)
@@ -174,7 +200,6 @@ while True:
                 max_value = max(data)
                 data_range = max_value - min_value
 
-                import numpy as np
                 Q1 = np.percentile(data, 25)
                 Q3 = np.percentile(data, 75)
                 IQR = Q3 - Q1
