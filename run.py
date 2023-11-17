@@ -41,7 +41,50 @@ def get_integer_input(prompt, range_min=None, range_max=None):
         except ValueError:
             print(" Invalid input. Please enter a valid integer (i.e. whole number).")
 
-# Creates user choices
+# Save function which takes analysis results and writes it to a text file 
+def save_to_text_file(data, summary_message):
+    output_file_path = 'analysis_results.txt'
+    with open(output_file_path, 'w') as file:
+    
+        # Write the summary of price changes to text file
+        file.write("\n +--------------------------------------------------+\n")
+        file.write(" |              Summary of Price Changes            |\n")
+        file.write(" +--------------------------------------------------+\n")
+        file.write(f"\n                From {start_year} Q{start_quarter} to {end_year} Q{end_quarter}\n")
+        file.write(f"            {summary_message}\n")
+        file.write("                  For a New Property\n")
+        file.write("\n +--------------------------------------------------+\n")
+
+        # Write the descriptive statistics to text file
+        if data:
+            file.write(" |              Descriptive Statistics:             |\n")
+            file.write(" +--------------------------------------------------+\n")
+            file.write(f"\n        Minimum Value:            €{min_value:8,.2f}\n")
+            file.write(f"        Maximum Value:            €{max_value:8,.2f}\n")
+            file.write(f"        Range:                    €{data_range:8,.2f}\n")
+            file.write("\n +--------------------------------------------------+\n")
+            file.write(f"\n        Lower Quartile (Q1):      €{Q1:8,.2f}\n")
+            file.write(f"        Median (Q2):              €{median:8,.2f}\n")
+            file.write(f"        Upper Quartile (Q3):      €{Q3:8,.2f}\n")
+            file.write(f"        IQR:                      €{IQR:8,.2f}\n")
+            file.write("\n +--------------------------------------------------+\n")
+            file.write(f"\n        Average (mean):           €{average:8,.2f}\n")
+            file.write(f"        Standard Deviation (+/-): €{std_dev:8,.2f}\n")                    
+            file.write("\n +--------------------------------------------------+\n")
+
+# Function to ask user if they want results saved
+def save_results(data, summary_message):
+
+    save_choice = input("  Q. Would you like results saved? (yes/no): ").lower()
+
+    if save_choice.lower().startswith('y'):
+        save_to_text_file(data, summary_message)
+        print("\n     Results have been saved to 'analysis_results.txt'\n")
+
+    else:
+        print("\n     These results have not been saved.\n")
+
+# Creates user choice loop
 while True:
     
     # User options dictionary with key-value pair representing choices that can be selected
@@ -227,10 +270,13 @@ while True:
                     print(" +--------------------------------------------------+")
                     print(f"        Average (mean):           €{average:8,.2f}")
                     print(f"        Standard Deviation (+/-): €{std_dev:8,.2f}")                    
+                    print(" +--------------------------------------------------+\n")
 
         except Exception as e:
-            print(f" An error occurred: {e}")
+            print(f"\n An error occurred: {e}")
 
+        save_results(data, summary_message)
+    
     elif choice == '3':
         # Option 3: Exit the program
         print("\n Exiting program... \n \n Thanks for using this 'App', Bye!")
