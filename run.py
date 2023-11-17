@@ -52,30 +52,31 @@ def save_to_text_file(data, summary_message):
         file.write(" +--------------------------------------------------+\n")
         file.write(f"\n                From {start_year} Q{start_quarter} to {end_year} Q{end_quarter}\n")
         file.write(f"            {summary_message}\n")
-        file.write("                  For a New Property\n")
+        file.write(f"               New Properity - {selected_county}\n")
         file.write("\n +--------------------------------------------------+\n")
 
         # Write the descriptive statistics to text file
         if data:
-            file.write(" |              Descriptive Statistics:             |\n")
+            
+            file.write(" |                Summary Statistics:               |\n")
             file.write(" +--------------------------------------------------+\n")
-            file.write(f"\n        Minimum Value:            €{min_value:8,.2f}\n")
-            file.write(f"        Maximum Value:            €{max_value:8,.2f}\n")
-            file.write(f"        Range:                    €{data_range:8,.2f}\n")
+            file.write(f"\n       Average (mean):              €{average:8,.2f}\n")
+            file.write(f"       Standard Deviation (+/-):    €{std_dev:8,.2f}\n")  
             file.write("\n +--------------------------------------------------+\n")
-            file.write(f"\n        Lower Quartile (Q1):      €{Q1:8,.2f}\n")
-            file.write(f"        Median (Q2):              €{median:8,.2f}\n")
-            file.write(f"        Upper Quartile (Q3):      €{Q3:8,.2f}\n")
-            file.write(f"        IQR:                      €{IQR:8,.2f}\n")
+            file.write(f"\n       Minimum Value:               €{min_value:8,.2f}\n")
+            file.write(f"       Maximum Value:               €{max_value:8,.2f}\n")
+            file.write(f"       Range:                       €{data_range:8,.2f}\n")
             file.write("\n +--------------------------------------------------+\n")
-            file.write(f"\n        Average (mean):           €{average:8,.2f}\n")
-            file.write(f"        Standard Deviation (+/-): €{std_dev:8,.2f}\n")                    
+            file.write(f"\n       Lower Quartile (Q1):         €{Q1:8,.2f}\n")
+            file.write(f"       Median (Q2):                 €{median:8,.2f}\n")
+            file.write(f"       Upper Quartile (Q3):         €{Q3:8,.2f}\n")
+            file.write(f"       IQR:                         €{IQR:8,.2f}\n")
             file.write("\n +--------------------------------------------------+\n")
 
 # Function to ask user if they want results saved
 def save_results(data, summary_message):
 
-    save_choice = input("  Q. Would you like results saved? (yes/no): ").lower()
+    save_choice = input("  Q. Would you like to the export results? (yes/no): ").lower()
 
     if save_choice.lower().startswith('y'):
         save_to_text_file(data, summary_message)
@@ -171,6 +172,7 @@ while True:
         print(" 7: Other counties")
         county_choice = get_integer_input("\n Enter the number for selected county: ", 1, 7)
         
+        
         # County choice is mapped to column header name in Google Sheets
         county_column_mapping = {
             1: "Nationally",
@@ -233,11 +235,12 @@ while True:
 
                 # Displays percentage summary
                 print("\n +--------------------------------------------------+")
-                print(" |              Summary of Price Changes            |")
+                print(" |              Summary of Price Changes:           |")
                 print(" +--------------------------------------------------+")
+                
                 print(f"                From {start_year} Q{start_quarter} to {end_year} Q{end_quarter}")
                 print(f"            {summary_message}")
-                print("                  For a New Properity")
+                print(f"               New Properity - {selected_county}")
                 print(" +--------------------------------------------------+")
 
                 # Calculates Summary Statistics
@@ -256,20 +259,20 @@ while True:
                     Q3 = np.percentile(data, 75)
                     IQR = Q3 - Q1
 
-                    # Displays sSummary Statistics
-                    print(" |              Descriptive Statistics:             |")
+                    # Displays Summary Statistics
+                    print(" |                Summary Statistics:               |")
                     print(" +--------------------------------------------------+")
-                    print(f"        Minimum Value:            €{min_value:8,.2f}")
-                    print(f"        Maximum Value:            €{max_value:8,.2f}")
-                    print(f"        Range:                    €{data_range:8,.2f}")
+                    print(f"       Average (mean):              €{average:8,.2f}")
+                    print(f"       Standard Deviation (+/-):    €{std_dev:8,.2f}")  
                     print(" +--------------------------------------------------+")
-                    print(f"        Lower Quartile (Q1):      €{Q1:8,.2f}")
-                    print(f"        Median (Q2):              €{median:8,.2f}")
-                    print(f"        Upper Quartile (Q3):      €{Q3:8,.2f}")
-                    print(f"        IQR:                      €{IQR:8,.2f}")
+                    print(f"       Minimum Value:               €{min_value:8,.2f}")
+                    print(f"       Maximum Value:               €{max_value:8,.2f}")
+                    print(f"       Range:                       €{data_range:8,.2f}")
                     print(" +--------------------------------------------------+")
-                    print(f"        Average (mean):           €{average:8,.2f}")
-                    print(f"        Standard Deviation (+/-): €{std_dev:8,.2f}")                    
+                    print(f"       Lower Quartile (Q1):         €{Q1:8,.2f}")
+                    print(f"       Median (Q2):                 €{median:8,.2f}")
+                    print(f"       Upper Quartile (Q3):         €{Q3:8,.2f}")
+                    print(f"       IQR:                         €{IQR:8,.2f}")
                     print(" +--------------------------------------------------+\n")
 
         except Exception as e:
