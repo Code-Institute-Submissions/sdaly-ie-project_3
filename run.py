@@ -1,6 +1,8 @@
 # REMINDER: Expected output terminal of 80 characters wide and 24 rows high
 # Lines 11 - 30 Source code from 'Code Institute', Lesson: 'LoveSandwiches Walkthrough Project - Getting Setup'
 # The following code imports the necessary module for interacting with Google Sheets API.
+# Imports necessary libraries or packages for spreadsheet manipulation,
+# OAuth authentication, date and time handling, statistical computations and numerical operations
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
@@ -29,7 +31,8 @@ SHEET = GSPREAD_CLIENT.open("new_property_price")
 # Selects first worksheet
 worksheet = SHEET.get_worksheet(0)
 
-# Range
+# Retrieves min & max years and quarters from all records in worksheet 
+# and returns a tuple containing these ranges, or None if there are no records
 def get_year_quarter_range(worksheet):
     records = worksheet.get_all_records()
     years = [record.get("Year") for record in records]
@@ -56,7 +59,10 @@ def calculate_statistics(data):
         'Q3': "N/A",
         'IQR': "N/A"
     }
-        
+
+    # Calculates and formats statistical measures, such as 
+    # minimum, maximum, range, median, mean, standard deviation, 
+    # quartiles, and interquartile range from given dataset        
     if data:
         stats['min_value'] = f"{min(data):,.2f}"
         stats['max_value'] = f"{max(data):,.2f}"
@@ -177,6 +183,13 @@ def save_results(data, summary_message, start_year, start_quarter, end_year, end
     else:
         print("\n     These results have not been saved.\n")
 
+# Retrieves last row in the worksheet
+def get_last_year_quarter(worksheet):
+    last_row = worksheet.get_all_values()[-1]  # This gets the last row
+    last_year = int(last_row[0])  # 'Year' is in the first column of the worksheet
+    last_quarter = int(last_row[1])  # 'Quarter' is in the second column of the worksheet
+    return last_year, last_quarter
+
 # Creates user choice loop
 while True:
     
@@ -204,59 +217,79 @@ while True:
 """
     # Displays a menu table and prompts the user to make a selection from the available options
     print(menu_table)
-    choice = input(" Please select your choice and hit 'Enter': ")
+    choice = input("    Please select your choice and hit 'Enter': ")
     print("\n +--------------------------------------------------+")
 
     # Option 1: Add new information to the database
     if choice == '1':
-        year = get_integer_input("\n Enter the Year (yyyy): ", 1900, 2100)
-        quarter = get_integer_input(" Enter the Quarter (1-4): ", 1, 4)
-        nationally = get_integer_input(" Enter the value for Nationally: €")
-        dublin = get_integer_input(" Enter the value for Dublin: €")
-        cork = get_integer_input(" Enter the value for Cork: €")
-        galway = get_integer_input(" Enter the value for Galway: €")
-        limerick = get_integer_input(" Enter the value for Limerick: €")
-        waterford = get_integer_input(" Enter the value for Waterford: €")
-        other_counties = get_integer_input(" Enter the value for Other Counties: €")
+        # Retrieves the most recent year and quarter from the worksheet 
+        # and calculates the next sequential year and quarter for data entry
+        (min_year, min_quarter), (max_year, max_quarter) = get_year_quarter_range(worksheet)    
+        
+        last_year, last_quarter = get_last_year_quarter(worksheet)
+        next_year, next_quarter = last_year, last_quarter
+        
+        if last_quarter < 4:
+            next_quarter += 1
+        else:
+            next_year += 1
+            next_quarter = 1
+
+        # Displays to user imported dataset range and next quarter and year expected
+        print("\n   Current data available from imported CSO dataset")
+        print(f"    Quarter {min_quarter}, Year {min_year} to Quarter {last_quarter}, Year {last_year}")
+        print(f" Please enter new data for next Quarter {next_quarter}, Year {next_year}:")
+        print("\n +--------------------------------------------------+\n")
+        
+        # Prompts user to enter new data for the next quarter and year 
+        # by in putting average new property prices for different regions in Ireland
+        nationally = get_integer_input("      Avg Price Nationally:      €")
+        dublin = get_integer_input("      Avg Price Dublin:          €")
+        cork = get_integer_input("      Avg Price Cork:            €")
+        galway = get_integer_input("      Avg Price Galway:          €")
+        limerick = get_integer_input("      Avg Price Limerick:        €")
+        waterford = get_integer_input("      Avg Price Waterford:       €")
+        other_counties = get_integer_input("      Avg Price Other Counties:  €")
 
         # Create a summary of the entered data
-        row = [year, quarter, nationally, dublin, cork, galway, limerick, waterford, other_counties]
-        print("\n Summary of the data you've entered:")
-        print(f" Year: {year}")
-        print(f" Quarter: {quarter}")
-        print(f" Nationally: {nationally}")
-        print(f" Dublin: {dublin}")
-        print(f" Cork: {cork}")
-        print(f" Galway: {galway}")
-        print(f" Limerick: {limerick}")
-        print(f" Waterford: {waterford}")
-        print(f" Other Counties: {other_counties}\n")
+        row = [next_year, next_quarter, nationally, dublin, cork, galway, limerick, waterford, other_counties]
+        print("\n +--------------------------------------------------+\n")        
+        print("      Summary of the data entered:\n")
+        print(f"       Year:                      {next_year}")
+        print(f"       Quarter:                    {next_quarter}")
+        print(f"       Avg Price Nationally:      €{nationally}")
+        print(f"       Avg Price Dublin:          €{dublin}")
+        print(f"       Avg Price Cork:            €{cork}")
+        print(f"       Avg Price Galway:          €{galway}")
+        print(f"       Avg Price Limerick:        €{limerick}")
+        print(f"       Avg Price Waterford:       €{waterford}")
+        print(f"       Avg Price Other Counties:  €{other_counties}\n")
 
         # Ask for confirmation before saving the data
-        confirm = input("\n Is the entered data correct? (yes/no): ")
+        confirm = input("     Is the entered data correct? (yes/no): ")
         if confirm.lower().startswith('y'):
-            
+                
             # Adds the data to the worksheet
             worksheet.append_row(row)
-            print("\n New information has been successfully added to the database.\n")
+            print("\n    New information has been added to database.\n")
         else:
-            print("\n Data entry cancelled. No data was added.")
+            print("\n        Data entry cancelled, no data added.\n")
             continue
 
     elif choice == '2':
-
-        # Retrieve the range of years and quarters from the sheet
+        # Retrieve the range for years and quarters from the worksheet
         (min_year, min_quarter), (max_year, max_quarter) = get_year_quarter_range(worksheet)
 
-        if not min_year or not max_year:  # In case there's no data in the sheet
-            print("No data available in the database to perform analysis.")
+        if not min_year or not max_year:  # In case there's no data available in the worksheet
+            print("\n No data available in the database to perform analysis.")
             continue
 
-        # Initialize an empty list for data collection and variables to hold the starting and ending price points for analysis
+        # Initialize empty list for data collection and variables
+        # to hold the starting and ending price points for analysis
         data = []
         start_price = None
         end_price = None
-        summary_message = "No data available for that range!"  # Default message
+        summary_message = "\n No data available for that range!"  # Default message
 
         # Prompts the user for start and end dates within specified ranges
         start_year = get_integer_input(f"\n Enter the start Year (YYYY) [Range: {min_year}-{max_year}]: ", min_year, max_year)
