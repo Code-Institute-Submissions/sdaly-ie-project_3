@@ -214,7 +214,7 @@ def save_to_text_file(data, summary_message, start_year, start_quarter,
 # saves to a text file if they confirm
 def save_results(data, summary_message, start_year, start_quarter,
                  end_year, end_quarter, selected_county, std_dev=None):
-    save_choice = input("\n        Like to export results? (yes/no): ").lower()
+    save_choice = input("        Like to export results? (yes/no): ").lower()
 
     if save_choice.lower().startswith('y'):
         save_to_text_file(data, summary_message, start_year, start_quarter,
