@@ -40,15 +40,23 @@ worksheet = SHEET.get_worksheet(0)
 # and returns a tuple containing these ranges, or None if there are no records
 def get_year_quarter_range(worksheet):
     records = worksheet.get_all_records()
-    years = [record.get("Year") for record in records]
-    quarters = [record.get("Quarter") for record in records]
+    if not records:
+        return (None, None), (None, None)
 
-    if years and quarters:
-        min_year, max_year = min(years), max(years)
-        min_quarter, max_quarter = min(quarters), max(quarters)
-        return (min_year, min_quarter), (max_year, max_quarter)
-    else:
-        return None, None
+    years = sorted({record['Year'] for record in records})
+    min_year, max_year = years[0], years[-1]
+
+    # Get all quarters for the min and max year
+    min_year_quarters = {
+        record['Quarter'] for record in records if record['Year'] == min_year
+    }
+    max_year_quarters = {
+        record['Quarter'] for record in records if record['Year'] == max_year
+    }
+
+    min_quarter, max_quarter = min(min_year_quarters), max(max_year_quarters)
+
+    return (min_year, min_quarter), (max_year, max_quarter)
 
 
 # Calculates and returns statistical measures for dataset,
@@ -322,8 +330,14 @@ while True:
             print("\n        Data entry cancelled, no data added.\n")
             continue
 
-    elif choice == '2':
         # Retrieve the range for years and quarters from the worksheet
+        (min_year, min_quarter), (max_year, max_quarter) = \
+            get_year_quarter_range(worksheet)
+
+    elif choice == '2':
+        # Fetch records from the worksheet
+        records = worksheet.get_all_records()
+        # Retrieve the range for years and quarters from the records
         (min_year, min_quarter), (max_year, max_quarter) = \
             get_year_quarter_range(worksheet)
 
@@ -331,71 +345,42 @@ while True:
             print("\n No data available in the database to perform analysis.")
             continue
 
-        # Initialize empty list for data collection and variables
-        # to hold the starting and ending price points for analysis
+        # Initialize data collection and analysis variables
         data = []
         start_price = None
         end_price = None
         summary_message = "\n No data available for that range!"
 
-        # Prompts the user for start and end dates within specified ranges
-        start_year = get_integer_input(
-            f"\nEnter the start Year (YYYY) [Range: {min_year}-{max_year}]: ",
-            min_year,
-            max_year
-        )
-        start_quarter = get_integer_input(
-            "Enter the start Quarter (1-4) [Range: 1-4]: ",
-            1,
-            4
-        )
+        print("\n Welcome to Statistical and Price Summary Analysis")
 
-        end_year = get_integer_input(
-            f"\nEnter the end Year (YYYY) [Range: {start_year}-{max_year}]: ",
-            start_year,
-            max_year
-        )
+        # Prompt the user for the start year
+        start_year = get_integer_input(f"\n Enter the start Year (YYYY)"
+                                       f" [Range: {min_year}-{max_year}]: ",
+                                       min_year, max_year)
 
-        if end_year == start_year:
-            end_quarter = get_integer_input(
-                f"Enter the end Quarter (1-4) [Range: {start_quarter}-4]: ",
-                start_quarter,
-                4
-            )
-        else:
-            end_quarter = get_integer_input(
-                "Enter the end Quarter (1-4) [Range: 1-4]: ",
-                1,
-                4
-            )
+        # If the start year is the max year, limit the start quarter
+        # to max quarter range
+        start_quarter_range = max_quarter if start_year == max_year else 4
 
-        # Prompts the user for start and end dates within specified ranges
-        start_year = get_integer_input(
-            f"\n Enter the start Year (YYYY) [Range: {min_year}-{max_year}]: ",
-            min_year,
-            max_year
-        )
-        start_quarter = get_integer_input(
-            " Enter the start Quarter (1-4) [Range: 1-4]: ",
-            1, 4
-        )
+        # Prompt user for the start quarter using the range determined above
+        start_quarter = get_integer_input(f" Enter the start Quarter "
+                                          f"(1-4) [Range: "
+                                          f"1-{start_quarter_range}]: ",
+                                          1, start_quarter_range)
 
-        end_year = get_integer_input(
-            f"\n Enter the end Year (YYYY) [Range: {start_year}-{max_year}]: ",
-            start_year,
-            max_year
-        )
+        # Prompt user for the end year
+        end_year = get_integer_input(f" Enter the end Year (YYYY) "
+                                     f"[Range: {start_year}-{max_year}]: ",
+                                     start_year, max_year)
 
-        if end_year == start_year:
-            end_quarter = get_integer_input(
-                f" Enter the end Quarter (1-4) [Range: {start_quarter}-4]: ",
-                start_quarter, 4
-            )
-        else:
-            end_quarter = get_integer_input(
-                " Enter the end Quarter (1-4) [Range: 1-4]: ",
-                1, 4
-            )
+        # If the end year is the max year, we need to adjust the end
+        # quarter range
+        end_quarter_range = max_quarter if end_year == max_year else 4
+
+        # Prompt user for the end quarter using the range determined above
+        end_quarter = get_integer_input(f" Enter the end Quarter (1-4) "
+                                        f"[Range: 1-{end_quarter_range}]: ",
+                                        1, end_quarter_range)
 
         # Prompt user for county selection
         print("\n Select the county for analysis:")
