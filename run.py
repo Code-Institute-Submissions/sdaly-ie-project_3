@@ -214,15 +214,15 @@ def save_to_text_file(data, summary_message, start_year, start_quarter,
 # saves to a text file if they confirm
 def save_results(data, summary_message, start_year, start_quarter,
                  end_year, end_quarter, selected_county, std_dev=None):
-    save_choice = input("\n Like to the export results? (yes/no): ").lower()
+    save_choice = input("\n        Like to export results? (yes/no): ").lower()
 
     if save_choice.lower().startswith('y'):
         save_to_text_file(data, summary_message, start_year, start_quarter,
                           end_year, end_quarter, selected_county, std_dev)
-        print("\n     Results have been saved to 'analysis_results.txt'\n")
+        print("\n Results have been saved to 'analysis_results.txt'\n")
 
     else:
-        print("\n     These results have not been saved.\n")
+        print("\n         These results have not been saved.\n")
 
 
 # Retrieves last row in the worksheet
@@ -327,7 +327,7 @@ while True:
             worksheet.append_row(row)
             print("\n    New information has been added to database.\n")
         else:
-            print("\n        Data entry cancelled, no data added.\n")
+            print("\n       Data entry cancelled - no data added.\n")
             continue
 
         # Retrieve the range for years and quarters from the worksheet
